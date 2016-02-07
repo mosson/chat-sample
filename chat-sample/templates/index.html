@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<title>Chat Example</title>
+</head>
+<body>
+<h1>Chat Example</h1>
+<ul id="list">
+</ul>
+<form id="form">
+  <textarea id="area"></textarea>
+  <input type="submit" value="send"/>
+</form>
+<script type="text/javascript">
+document.addEventListener("load", init);
+document.addEventListener("DOMContentLoaded", init);
+
+var inited = false;
+var socket = null;
+function init() {
+  if(inited) return;
+  inited = true;
+
+  makeSocket();
+
+  document.getElementById("form").addEventListener("submit", submitHdl);
+}
+
+function makeSocket() {
+  if(!window.WebSocket) {
+    console.error("cannot use websocket");
+  } else {
+    socket = new window.WebSocket("ws://{{.Host}}/room");
+    socket.onclose = function() {
+      console.log("socket closed");
+    }
+    socket.onmessage = function(e) {
+      var item = document.createElement("li");
+      item.innerHTML = e.data;
+      document.getElementById("list").appendChild(item);
+    }
+  }
+}
+
+function submitHdl(e) {
+  e && e.preventDefault();
+  socket.send(document.getElementById("area").value);
+}
+</script>
+</body>
+</html>
