@@ -9,6 +9,7 @@
 <ul id="list">
 </ul>
 <form id="form">
+  {{.UserData.name}}:<br/>
   <textarea id="area"></textarea>
   <input type="submit" value="send"/>
 </form>
@@ -36,8 +37,17 @@ function makeSocket() {
       console.log("socket closed");
     }
     socket.onmessage = function(e) {
+      var msg = JSON.parse(e.data);
       var item = document.createElement("li");
-      item.innerHTML = e.data;
+      var name = document.createElement("strong");
+      var message = document.createElement("span");
+      var time = document.createElement("span");
+      name.innerHTML = msg.Name + ": ";
+      message.innerHTML = msg.Message;
+      time.innerHTML = msg.When;
+      item.appendChild(name);
+      item.appendChild(message);
+      item.appendChild(time);
       document.getElementById("list").appendChild(item);
     }
   }
@@ -45,7 +55,7 @@ function makeSocket() {
 
 function submitHdl(e) {
   e && e.preventDefault();
-  socket.send(document.getElementById("area").value);
+  socket.send(JSON.stringify({Message: document.getElementById("area").value}));
 }
 </script>
 </body>
