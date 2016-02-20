@@ -43,11 +43,12 @@ func main() {
 
 func _main() {
 	var addr = flag.String("addr", ":8080", "アプリケーションのアドレス")
+	var callbackURL = flag.String("google-oauth-callback", "http://localhost:8080/auth/callback/google", "Google認証のコールバックURL")
 	flag.Parse()
 
 	gomniauth.SetSecurityKey(signature.RandomKey(64))
 	gomniauth.WithProviders(
-		google.New(os.Getenv("GOOGLE_OAUTH_CLIENT_ID"), os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"), "http://localhost:8080/auth/callback/google"),
+		google.New(os.Getenv("GOOGLE_OAUTH_CLIENT_ID"), os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"), *callbackURL),
 	)
 
 	r := newRoom()
@@ -60,6 +61,7 @@ func _main() {
 	go r.run()
 
 	log.Println("Webサーバーを開始します。ポート： ", *addr)
+	log.Println("Google認証のコールバックURL: ", *callbackURL)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
