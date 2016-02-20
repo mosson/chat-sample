@@ -26,4 +26,7 @@ _testmain.go
 *.test
 *.prof
 
+chat
+playground/*
+
 credential
